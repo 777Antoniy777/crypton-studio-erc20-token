@@ -1,16 +1,7 @@
 import { ethers } from "hardhat";
 import { Contract, ContractFactory } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import fs from "fs";
-
-const saveContractAddress = (contract: Contract): void => {
-  const contractsDir = __dirname + "/../contracts";
-
-  fs.writeFileSync(
-    contractsDir + "/contract-address.json",
-    JSON.stringify({ address: contract.address }, undefined, 2)
-  );
-};
+import { saveContractAddress } from "../utils/save-contract-address";
 
 const main = async (): Promise<void> => {
   const [deployer]: SignerWithAddress[] = await ethers.getSigners();

@@ -2,22 +2,22 @@ import { ethers } from "hardhat";
 import { expect } from "chai";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { Donation__factory, Donation } from "../typechain";
+import { Token__factory, Token } from "../typechain";
 
 describe("Donation contract", () => {
-  let Donation: Donation__factory;
-  let hardhatDonation: Donation;
+  let Token: Token__factory;
+  let token: Token;
   let owner: SignerWithAddress;
   let addr1: SignerWithAddress;
   let addr2: SignerWithAddress;
   let addrs: SignerWithAddress[];
 
   beforeEach(async () => {
-    Donation = (await ethers.getContractFactory("Donation")) as Donation__factory;
+    Token = (await ethers.getContractFactory("Donation")) as Token__factory;
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    hardhatDonation = await Donation.deploy();
-    await hardhatDonation.deployed();
+    token = await Token.deploy(10000);
+    await token.deployed();
   });
 
   describe("Deployment", () => {

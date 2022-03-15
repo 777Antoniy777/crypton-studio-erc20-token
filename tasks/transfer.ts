@@ -4,17 +4,16 @@ import { task } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 import { getContractAddress } from "../utils/get-contract-address";
 
-task("insertDonation", "Insert any value donation")
-  .addParam("amount", "Value of donation")
+task("transfer", "Transfer value to receiver address")
+  .addParam("receiverAddress", "Receiver address")
+  .addParam("value", "Value of tokens")
   .setAction(async (taskArgs: TaskArguments, { ethers }) => {
-    const { amount } = taskArgs;
+    const { receiverAddress, value } = taskArgs;
     const parsedAddress = getContractAddress();
 
     if (parsedAddress) {
-      const hardhatDonation: Contract = await ethers.getContractAt("Token", parsedAddress.address);
+      const Token: Contract = await ethers.getContractAt("Token", parsedAddress.address);
 
-      await hardhatDonation.insertDonation({
-        value: ethers.utils.parseEther(amount),
-      });
+      await Token.transfer(receiverAddress, value);
     }
   });

@@ -14,7 +14,7 @@ dotEnvConfig();
 const { PRIVATE_KEY, ALCHEMY_API_KEY, ETHERSCAN_API_KEY } = process.env;
 
 // задачи
-import "./tasks/insert-donation";
+import "./tasks/transfer";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
