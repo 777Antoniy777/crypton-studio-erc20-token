@@ -40,7 +40,7 @@ contract Token {
 
     function transferFrom(address senderAddress, address receiverAddress, uint256 value) public returns (bool success) {
 		require(value <= balances[senderAddress], 'Your balance is less than needle');
-		require(value <= allowed[senderAddress][msg.sender], 'You cant transfer because you have not enough permission');
+		require(value <= allowed[senderAddress][msg.sender], 'You cant transfer because you have not enough permissions');
 
 		balances[senderAddress] = balances[senderAddress] - value;
 		balances[receiverAddress] = balances[receiverAddress] + value;
