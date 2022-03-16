@@ -6,6 +6,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Token__factory, Token } from "../typechain";
 
 describe("Donation contract", () => {
+  const zeroAddress = "0x0000000000000000000000000000000000000000";
   const tokenInitialCount = 10000;
   let Token: Token__factory;
   let token: Token;
@@ -35,7 +36,8 @@ describe("Donation contract", () => {
 
   describe("Deployment", () => {
     it("Should set the right tokenInitialCount", async () => {
-      expect(await token.totalSupply()).to.equal(tokenInitialCount);
+      const totalTokensCount = await token.totalSupply();
+      expect(totalTokensCount).to.equal(tokenInitialCount);
     });
 
     it("Should return initial token value for owner address after deploying", async () => {
@@ -52,9 +54,7 @@ describe("Donation contract", () => {
   describe("transfer", () => {
     it("Should revert function if balance is less than needle", async () => {
       const sentValue = 10;
-      await expect(transferTokens(addr1, addr2, sentValue)).to.be.revertedWith(
-        "Your balance is less than needle"
-      );
+      await expect(transferTokens(addr1, addr2, sentValue)).to.be.revertedWith("Your balance is less than needle");
 
       const addressBalance = await token.balanceOf(addr1.address);
       expect(addressBalance).to.equal(0);
@@ -79,7 +79,7 @@ describe("Donation contract", () => {
       const approveTx = await token.approve(addr2.address, approvedValue);
       await approveTx.wait();
       await expect(approveTx).to.emit(token, "Approval").withArgs(owner.address, addr2.address, approvedValue);
-      
+
       const allowanceValue = await token.allowance(owner.address, addr2.address);
       await expect(allowanceValue).to.equal(approvedValue);
     });
@@ -99,33 +99,35 @@ describe("Donation contract", () => {
     it("Should revert function if third side has not enough permissions", async () => {
       // send tokens to another address from owner
       const [, sentValue] = await transferTokens();
-      
+
       const addressBalance = await token.balanceOf(addr1.address);
       expect(addressBalance).to.equal(sentValue);
 
       // connect to third side (addr2) and try to send tokens without permissions
       const sentValueByThirdSide = 5;
-      await expect(token.connect(addr2).transferFrom(addr1.address, addrs[0].address, sentValueByThirdSide)).to.be.revertedWith(
-        "You cant transfer because you have not enough permissions"
-      );
+      await expect(
+        token.connect(addr2).transferFrom(addr1.address, addrs[0].address, sentValueByThirdSide)
+      ).to.be.revertedWith("You cant transfer because you have not enough permissions");
     });
 
     it("Should transfer tokens if third side has permissions", async () => {
       // send tokens to another address from owner
       const [, sentValue] = await transferTokens(undefined, undefined, 200);
 
-      // approve permissions for third side and check its balance 
+      // approve permissions for third side and check its balance
       const approvedValue = 100;
       await token.connect(addr1).approve(addr2.address, approvedValue);
 
       const allowanceValue = await token.allowance(addr1.address, addr2.address);
       await expect(allowanceValue).to.equal(approvedValue);
-      
+
       // transfer tokens by third side and check balances
       const sentValueByThirdSide = 50;
-      const transferFromTx = await token.connect(addr2).transferFrom(addr1.address, addrs[0].address, sentValueByThirdSide);
+      const transferFromTx = await token
+        .connect(addr2)
+        .transferFrom(addr1.address, addrs[0].address, sentValueByThirdSide);
       await transferFromTx.wait();
-      
+
       const senderBalance = await token.balanceOf(addr1.address);
       expect(senderBalance).to.equal(sentValue - sentValueByThirdSide);
 
@@ -135,7 +137,58 @@ describe("Donation contract", () => {
       const thirdSideBalance = await token.allowance(addr1.address, addr2.address);
       expect(thirdSideBalance).to.equal(approvedValue - sentValueByThirdSide);
 
-      await expect(transferFromTx).to.emit(token, "Transfer").withArgs(addr1.address, addrs[0].address, sentValueByThirdSide);
+      await expect(transferFromTx)
+        .to.emit(token, "Transfer")
+        .withArgs(addr1.address, addrs[0].address, sentValueByThirdSide);
+    });
+  });
+
+  describe("mint", () => {
+    it("Should reverted function if address not an owner", async () => {
+      const additionalTokens = 5000;
+      await expect(token.connect(addr1).mint(owner.address, additionalTokens)).to.be.reverted;
+    });
+
+    it("Should mint additional tokens", async () => {
+      const additionalTokens = 5000;
+      const mintTx = await token.mint(owner.address, additionalTokens);
+      await mintTx.wait();
+
+      const totalTokensCount = await token.totalSupply();
+      expect(totalTokensCount).to.equal(tokenInitialCount + additionalTokens);
+
+      const ownerBalance = await token.balanceOf(owner.address);
+      expect(ownerBalance).to.equal(tokenInitialCount + additionalTokens);
+
+      await expect(mintTx).to.emit(token, "Transfer").withArgs(zeroAddress, owner.address, additionalTokens);
+    });
+  });
+
+  describe("burn", () => {
+    it("Should reverted function if address not an owner", async () => {
+      const burningTokens = 20000;
+      await expect(token.connect(addr1).burn(owner.address, burningTokens)).to.be.reverted;
+    });
+
+    it("Should reverted function if burning tokens more than current balance", async () => {
+      const burningTokens = 20000;
+      await expect(token.burn(owner.address, burningTokens)).to.be.revertedWith(
+        "Tokens balance is less than burning tokens value"
+      );
+    });
+
+    it("Should birn definitely tokens amount", async () => {
+      const burningTokens = 5000;
+      const burnTx = await token.burn(owner.address, burningTokens);
+      await burnTx.wait();
+
+      const totalTokensCount = await token.totalSupply();
+      expect(totalTokensCount).to.equal(tokenInitialCount - burningTokens);
+
+      const ownerBalance = await token.balanceOf(owner.address);
+      expect(ownerBalance).to.equal(tokenInitialCount - burningTokens);
+
+      await expect(burnTx).to.emit(token, "Transfer").withArgs(owner.address, zeroAddress, burningTokens);
     });
   });
 });
