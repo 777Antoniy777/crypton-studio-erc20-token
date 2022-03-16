@@ -11,17 +11,19 @@ import { config as dotEnvConfig } from "dotenv";
 
 dotEnvConfig();
 
-const { PRIVATE_KEY, ALCHEMY_API_KEY, ETHERSCAN_API_KEY } = process.env;
+const { FIRST_PRIVATE_KEY, SECOND_PRIVATE_KEY, ALCHEMY_API_KEY, ETHERSCAN_API_KEY } = process.env;
 
 // задачи
 import "./tasks/transfer";
+import "./tasks/approve";
+import "./tasks/transfer-from";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
     rinkeby: {
       url: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
-      accounts: [PRIVATE_KEY || ""],
+      accounts: [FIRST_PRIVATE_KEY || "", SECOND_PRIVATE_KEY || ""],
     },
   },
   etherscan: {

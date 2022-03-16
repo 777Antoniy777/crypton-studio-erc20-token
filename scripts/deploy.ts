@@ -8,7 +8,7 @@ const main = async (): Promise<void> => {
   console.log("Deploying contracts with the account:", deployer.address);
 
   const Token: ContractFactory = await ethers.getContractFactory("Token");
-  const tokenContract: Contract = await Token.deploy();
+  const tokenContract: Contract = await Token.deploy(1000);
 
   await tokenContract.deployed();
   console.log("Contract address:", tokenContract.address);

@@ -73,14 +73,14 @@ contract Token is Ownable {
     }
 
     // additional
-    function mint(address ownerAddress, uint256 amount) internal onlyOwner {
+    function mint(address ownerAddress, uint256 amount) public onlyOwner {
         totalCount = totalCount + amount;
         balances[ownerAddress] = balances[ownerAddress] + amount;
 
         emit Transfer(address(0), ownerAddress, amount);
     }
 
-    function burn(address ownerAddress, uint256 amount) internal onlyOwner {
+    function burn(address ownerAddress, uint256 amount) public onlyOwner {
         require(amount <= balances[ownerAddress], "Tokens balance is less than burning tokens value");
 
         totalCount = totalCount - amount;
