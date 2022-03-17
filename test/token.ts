@@ -6,8 +6,11 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Token__factory, Token } from "../typechain";
 
 describe("Donation contract", () => {
-  const zeroAddress = "0x0000000000000000000000000000000000000000";
+  const name = "TonyToken";
+  const symbol = "TT";
+  const decimals = 18;
   const tokenInitialCount = 10000;
+  const zeroAddress = "0x0000000000000000000000000000000000000000";
   let Token: Token__factory;
   let token: Token;
   let owner: SignerWithAddress;
@@ -35,6 +38,21 @@ describe("Donation contract", () => {
   });
 
   describe("Deployment", () => {
+    it("Should return token name", async () => {
+      const tokenName = await token.name();
+      expect(tokenName).to.equal(name);
+    });
+
+    it("Should return token symbol", async () => {
+      const tokenSymbol = await token.symbol();
+      expect(tokenSymbol).to.equal(symbol);
+    });
+
+    it("Should return token decimals", async () => {
+      const tokenDecimals = await token.decimals();
+      expect(tokenDecimals).to.equal(decimals);
+    });
+
     it("Should set the right tokenInitialCount", async () => {
       const totalTokensCount = await token.totalSupply();
       expect(totalTokensCount).to.equal(tokenInitialCount);

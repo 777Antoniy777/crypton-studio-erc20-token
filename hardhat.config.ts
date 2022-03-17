@@ -17,6 +17,8 @@ const { FIRST_PRIVATE_KEY, SECOND_PRIVATE_KEY, ALCHEMY_API_KEY, ETHERSCAN_API_KE
 import "./tasks/transfer";
 import "./tasks/approve";
 import "./tasks/transfer-from";
+import "./tasks/mint";
+import "./tasks/burn";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.4",

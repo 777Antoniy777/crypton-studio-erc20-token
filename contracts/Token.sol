@@ -21,6 +21,18 @@ contract Token is Ownable {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed allower, address indexed spender, uint256 value);
 
+    function name() public view returns (string memory) {
+        return NAME;
+    }
+
+    function symbol() public view returns (string memory) {
+        return SYMBOL;
+    }
+
+    function decimals() public view returns (uint8) {
+        return DECIMALS;
+    }
+
     function totalSupply() public view returns (uint256) {
         return totalCount;
     }
