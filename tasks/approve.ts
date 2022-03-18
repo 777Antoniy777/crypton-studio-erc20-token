@@ -13,7 +13,9 @@ task("approve", "Give permission for third side")
 
     if (parsedAddress) {
       const Token: Contract = await ethers.getContractAt("Token", parsedAddress.address);
+      const decimals = await Token.decimals();
+      const transformedValue = ethers.BigNumber.from(10).pow(decimals).mul(value);
 
-      await Token.approve(spender, value);
+      await Token.approve(spender, transformedValue);
     }
   });

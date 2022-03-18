@@ -14,7 +14,9 @@ task("transferFrom", "Transfer value from sender to receiver by third side")
 
     if (parsedAddress) {
       const Token: Contract = await ethers.getContractAt("Token", parsedAddress.address);
+      const decimals = await Token.decimals();
+      const transformedValue = ethers.BigNumber.from(10).pow(decimals).mul(value);
 
-      await Token.transferFrom(sender, receiver, value);
+      await Token.transferFrom(sender, receiver, transformedValue);
     }
   });

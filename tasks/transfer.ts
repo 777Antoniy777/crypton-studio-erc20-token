@@ -13,7 +13,9 @@ task("transfer", "Transfer value to receiver address")
 
     if (parsedAddress) {
       const Token: Contract = await ethers.getContractAt("Token", parsedAddress.address);
+      const decimals = await Token.decimals();
+      const transformedValue = ethers.BigNumber.from(10).pow(decimals).mul(value);
 
-      await Token.transfer(receiver, value);
+      await Token.transfer(receiver, transformedValue);
     }
   });

@@ -13,7 +13,9 @@ task("burn", "Burn some tokens count")
 
     if (parsedAddress) {
       const Token: Contract = await ethers.getContractAt("Token", parsedAddress.address);
+      const decimals = await Token.decimals();
+      const transformedAmount = ethers.BigNumber.from(10).pow(decimals).mul(amount);
 
-      await Token.burn(owner, amount);
+      await Token.burn(owner, transformedAmount);
     }
   });
