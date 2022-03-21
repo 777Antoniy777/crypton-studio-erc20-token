@@ -1,3 +1,3 @@
 # crypton-studio-erc20-token
 
-https://testnet.bscscan.com/address/0xF8952b77298D7690244ce8eE0267A5aDf16866F3
+https://rinkeby.etherscan.io/address/0x589ef113db52d5bB59b2D5696e4BF4Df7011D7d3
